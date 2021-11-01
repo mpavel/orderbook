@@ -1,6 +1,6 @@
 import React from 'react';
 import './Orderbook.scss';
-import { Number, NumberStyle, Price } from '../components';
+import { NumberStyle, OrderLevel } from '../components';
 
 interface Props {}
 
@@ -19,18 +19,8 @@ export const OrderbookContainer: React.FC<Props> = ({}) => {
                             <div className='column'>Size</div>
                             <div className='column'>Price</div>
                         </div>
-                        <div className='row'>
-                            <div className='column'><Number amount={1200} /></div>
-                            <div className='column'><Number amount={1200} /></div>
-                            <div className='column'><Price amount={34500.5} bold></Price></div>
-                            <div className='depth' style={{ width: '10%' }}></div>
-                        </div>
-                        <div className='row'>
-                            <div className='column'><Number amount={1200} /></div>
-                            <div className='column'><Number amount={1200} /></div>
-                            <div className='column'><Price amount={34500.5} bold></Price></div>
-                            <div className='depth' style={{ width: '20%' }}></div>
-                        </div>
+                        <OrderLevel total={1200} size={1200} price={34500.5} depth={10} />
+                        <OrderLevel total={1200} size={1200} price={34500.5} depth={20} />
                     </div>
                     <div className='sellSide'>
                         <div className='header'>
@@ -38,18 +28,8 @@ export const OrderbookContainer: React.FC<Props> = ({}) => {
                             <div className='column'>Size</div>
                             <div className='column'>Price</div>
                         </div>
-                        <div className='row'>
-                            <div className='column'>1200</div>
-                            <div className='column'>1200</div>
-                            <div className='column price'>34,500.50</div>
-                            <div className='depth' style={{ width: '10%' }}></div>
-                        </div>
-                        <div className='row'>
-                            <div className='column'>1200</div>
-                            <div className='column'>1200</div>
-                            <div className='column price'>34,500.50</div>
-                            <div className='depth' style={{ width: '25%' }}></div>
-                        </div>
+                        <OrderLevel total={1200} size={1200} price={34500.5} depth={10} />
+                        <OrderLevel total={1200} size={1200} price={34500.5} depth={20} />
                     </div>
                 </div>
             </div>
