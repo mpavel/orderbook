@@ -1,0 +1,17 @@
+@import './../../utils/scss/variables.scss';
+
+.number {
+  font-family: 'Nova Mono', monospace;
+}
+
+.buy {
+  color: $buy-color;
+}
+
+.sell {
+  color: $sell-color;
+}
+
+.bold {
+  font-weight: bold;
+}
