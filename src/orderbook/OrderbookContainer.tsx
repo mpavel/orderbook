@@ -1,6 +1,6 @@
 import React from 'react';
 import './Orderbook.scss';
-import { NumberStyle, OrderLevel } from '../components';
+import { NumberStyle, OrderLevel, OrderSideHeader } from '../components';
 
 interface Props {}
 
@@ -14,20 +14,12 @@ export const OrderbookContainer: React.FC<Props> = ({}) => {
                 </div>
                 <div className='body'>
                     <div className='buySide'>
-                        <div className='header'>
-                            <div className='column'>Total</div>
-                            <div className='column'>Size</div>
-                            <div className='column'>Price</div>
-                        </div>
+                        <OrderSideHeader side='buy' />
                         <OrderLevel total={1200} size={1200} price={34500.5} depth={10} />
                         <OrderLevel total={1200} size={1200} price={34500.5} depth={20} />
                     </div>
                     <div className='sellSide'>
-                        <div className='header'>
-                            <div className='column'>Total</div>
-                            <div className='column'>Size</div>
-                            <div className='column'>Price</div>
-                        </div>
+                        <OrderSideHeader side='sell' />
                         <OrderLevel total={1200} size={1200} price={34500.5} depth={10} />
                         <OrderLevel total={1200} size={1200} price={34500.5} depth={20} />
                     </div>

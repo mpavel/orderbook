@@ -36,12 +36,3 @@
   }
 }
 
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  text-transform: uppercase;
-  color: $muted-text-color;
-  border-bottom: 1px solid $border-color;
-  padding: .25rem 0;
-}
