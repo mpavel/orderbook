@@ -13,10 +13,11 @@
     width: 100%;
   }
 
-  &.sell-side-header {
+  &--sell {
     flex-direction: row-reverse;
   }
-  &.buy-side-header {
+
+  &--buy {
     flex-direction: row;
   }
 }

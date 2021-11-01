@@ -6,7 +6,7 @@
 }
 
 .orderbook {
-  .title {
+  &__title {
     position: relative;
     border-bottom: 2px solid $border-color;
     padding: .5rem 0;
@@ -25,14 +25,10 @@
     }
   }
 
-  .body {
+  &__body {
     display: flex;
     width: 100%;
     text-align: center;
-  }
-
-  .buySide, .sellSide {
-    width: 50%;
   }
 }
 
