@@ -2,17 +2,16 @@ import React from 'react';
 import { Number } from '../Number/Number';
 import { Price } from '../Price/Price';
 import './OrderLevel.scss';
-import { Side } from '../OrderSide/Types';
+import { Level, Side } from '../OrderSide/Types';
 
 interface Props {
-    total: number;
-    size: number;
-    price: number;
-    depth: number;
+    level: Level;
     side: Side;
 }
 
-export const OrderLevel: React.FC<Props> = ({ total, size, price, depth, side }) => {
+export const OrderLevel: React.FC<Props> = ({ level, side }) => {
+    const { total, size, price, depth } = level;
+
     return (
         <div className='row'>
             <div className='column'><Number amount={total} /></div>
