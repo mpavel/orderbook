@@ -14,8 +14,8 @@ export const OrderSide: React.FC<Props> = ({ side, levels }) => {
         <div className={`${side}-side`}>
             <OrderSideHeader side={side} />
 
-            {levels.map(level =>
-                <OrderLevel level={level} side={side} />,
+            {levels.map((level, index) =>
+                <OrderLevel key={index} level={level} side={side} />,
             )}
         </div>
     );
