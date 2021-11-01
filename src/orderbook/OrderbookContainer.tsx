@@ -6,7 +6,7 @@ import { useOrderbook } from './useOrderbook';
 
 
 export const OrderbookContainer: React.FC = () => {
-    const {bids, asks} = useOrderbook();
+    const { bids, asks } = useOrderbook();
     console.log('*** OrderbookContainer', bids, asks);
 
 
