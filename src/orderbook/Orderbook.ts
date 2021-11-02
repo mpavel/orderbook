@@ -1,8 +1,4 @@
-// type PriceLevel = [price: number, size: number];
-
-interface Order {
-    [index: number]: number;
-}
+import { Order } from './Types';
 
 const shouldRemoveExistingOrder = (
     deltaSize: number,
@@ -10,7 +6,12 @@ const shouldRemoveExistingOrder = (
     price: number,
 ): boolean => deltaSize === 0 && deltaPrice === price;
 
-const isExistingOrder = (price: number, deltaPrice: number): boolean => price === deltaPrice;
+const isCurrentOrder = (price: number, deltaPrice: number): boolean => price === deltaPrice;
+
+const isNewOrder = (orders: Order[], price: number) => {
+    const order = orders.find(order => order[0] === price);
+    return !order;
+}
 
 export class Orderbook {
     private _bids: Order[] = [];
@@ -30,37 +31,33 @@ export class Orderbook {
     }
 
     private updateOrders = (existingOrders: Order[], deltaOrders: Order[]) => {
-        const updatedBids: Order[] = [];
-        deltaOrders.forEach(order => {
-            let found = false;
+        const newOrders: Order[] = [...existingOrders];
 
-            const deltaPrice = order[0];
-            const deltaSize = order[1];
+        for (const deltaOrder of deltaOrders) {
+            const deltaPrice = deltaOrder[0];
+            const deltaSize = deltaOrder[1];
 
-            existingOrders.forEach(existingOrder => {
-                const price = existingOrder[0];
-                const size = existingOrder[1];
+            let length = newOrders.length;
+            let i = 0;
+            while (i < length) {
+                const price = newOrders[i][0];
 
                 if (shouldRemoveExistingOrder(deltaSize, deltaPrice, price)) {
-                    found = true;
-                    return;
+                    newOrders.splice(i, 1);
+                    break;
                 }
-                if (isExistingOrder(deltaPrice, price)) {
-                    updatedBids.push([price, deltaSize]);
-                    found = true;
-                } else {
-                    // no changes, leave as it was
-                    updatedBids.push([price, size]);
+                if (isCurrentOrder(deltaPrice, price)) {
+                    newOrders[i] = [price, deltaSize];
+                    break;
                 }
-            });
-
-            if (!found) {
-                // not found, must add a new one
-                updatedBids.push([deltaPrice, deltaSize]);
+                if (deltaSize !== 0 && isNewOrder(newOrders, deltaPrice)) {
+                    newOrders.push([deltaPrice, deltaSize]);
+                }
+                i++;
             }
-        });
+        }
 
-        return updatedBids;
+        return newOrders;
     }
 
     update = (deltaBids: Order[], deltaAsks: Order[]) => {

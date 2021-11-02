@@ -1,11 +1,12 @@
 import { Orderbook } from '../Orderbook';
+import { Order } from '../Types';
 
-const bids = [
+const bids: Order[] = [
     [1000, 50],
     [1005, 100],
     [1010, 1000],
 ];
-const asks = [
+const asks: Order[] = [
     [980, 10],
     [970, 20],
     [960, 30],
@@ -37,11 +38,12 @@ describe('Orderbook', () => {
     it('removes bids and asks which are updated with a size of 0', () => {
         const orderbook = new Orderbook(bids, asks);
 
-        orderbook.update([[1005, 0.0]], [[960, 0.0]]);
+        orderbook.update([[1005, 0.0], [1200, 10], [1010, 200]], [[960, 0.0]]);
 
         expect(orderbook.bids).toEqual([
             [1000, 50],
-            [1010, 1000],
+            [1010, 200],
+            [1200, 10],
         ]);
         expect(orderbook.asks).toEqual([
             [980, 10],
@@ -49,7 +51,6 @@ describe('Orderbook', () => {
         ]);
     });
 
-    // todo: sorted?
     it('ads bids and asks', () => {
         const orderbook = new Orderbook(bids, asks);
 
