@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { updateOrders } from './Orderbook';
+import { Order, Sort } from './Types';
 
 const WEB_SOCKET_URL = 'wss://www.cryptofacilities.com/ws/v1';
 
 export const useOrderbook = () => {
-    const [bids, setBids] = useState([]);
-    const [asks, setAsks] = useState([]);
+    const [bids, setBids] = useState<Order[]>([]);
+    const [asks, setAsks] = useState<Order[]>([]);
 
     useEffect(() => {
         const ws = new WebSocket(WEB_SOCKET_URL);
@@ -19,8 +21,8 @@ export const useOrderbook = () => {
 
         ws.onmessage = (message) => {
             const data = JSON.parse(message.data);
-            setBids(data?.bids ?? []);
-            setAsks(data?.asks ?? []);
+            setBids(updateOrders(bids, data?.bids ?? [], Sort.ASC));
+            setAsks(updateOrders(asks, data?.asks ?? [], Sort.DESC));
         }
 
         return () => {

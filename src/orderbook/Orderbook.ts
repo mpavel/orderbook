@@ -1,4 +1,4 @@
-import { Order } from './Types';
+import { Order, OrderWithTotal, Sort } from './Types';
 
 const shouldRemoveExistingOrder = (
     deltaSize: number,
@@ -6,77 +6,55 @@ const shouldRemoveExistingOrder = (
     price: number,
 ): boolean => deltaSize === 0 && deltaPrice === price;
 
-const isCurrentOrder = (price: number, deltaPrice: number): boolean => price === deltaPrice;
-
-const isNewOrder = (orders: Order[], price: number) => {
-    const order = orders.find(order => order[0] === price);
-    return !order;
+const SortMap = {
+    [Sort.ASC]: -1,
+    [Sort.DESC]: 1,
 }
 
-export class Orderbook {
-    private _bids: Order[] = [];
-    private _asks: Order[] = [];
-
-    constructor(bids: Order[], asks: Order[]) {
-        this._bids = bids;
-        this._asks = asks;
-    }
-
-    get bids() {
-        return this._bids;
-    }
-
-    get asks() {
-        return this._asks
-    }
-
-    private updateOrders = (existingOrders: Order[], deltaOrders: Order[]) => {
-        const newOrders: Order[] = [...existingOrders];
-
-        for (const deltaOrder of deltaOrders) {
-            const deltaPrice = deltaOrder[0];
-            const deltaSize = deltaOrder[1];
-
-            let length = newOrders.length;
-            let i = 0;
-            while (i < length) {
-                const price = newOrders[i][0];
-
-                if (shouldRemoveExistingOrder(deltaSize, deltaPrice, price)) {
-                    newOrders.splice(i, 1);
-                    break;
-                }
-                if (isCurrentOrder(deltaPrice, price)) {
-                    newOrders[i] = [price, deltaSize];
-                    break;
-                }
-                if (deltaSize !== 0 && isNewOrder(newOrders, deltaPrice)) {
-                    newOrders.push([deltaPrice, deltaSize]);
-                }
-                i++;
-            }
+export const updateOrders = (
+    existingOrders: Order[],
+    deltaOrders: Order[],
+    sort: Sort,
+): Order[] => {
+    return existingOrders.filter(existingOrder => {
+        const deltaOrder = deltaOrders.find(deltaOrder => deltaOrder[0] === existingOrder[0]);
+        if (deltaOrder && shouldRemoveExistingOrder(
+            deltaOrder[1],
+            deltaOrder[0],
+            existingOrder[0],
+        )) {
+            return false;
         }
 
-        return newOrders;
-    }
+        return true;
+    }).map(existingOrder => {
+        const deltaOrder = deltaOrders.find(deltaOrder => deltaOrder[1] !== 0 && deltaOrder[0] === existingOrder[0]);
+        if (deltaOrder) {
+            return [
+                existingOrder[0],
+                deltaOrder[1],
+            ];
+        }
 
-    update = (deltaBids: Order[], deltaAsks: Order[]) => {
-        this._bids = this.updateOrders(this._bids, deltaBids);
-        this._asks = this.updateOrders(this._asks, deltaAsks);
-    }
+        return existingOrder;
+    }).concat(deltaOrders.filter(deltaOrder => {
+        const hasExistingOrder = existingOrders.find(existingOrder => deltaOrder[0] === existingOrder[0]);
+        if (hasExistingOrder || deltaOrder[1] === 0) {
+            return false
+        }
+        return true;
+    })).sort((firstOrder, secondOrder) => {
+        if (firstOrder[0] < secondOrder[0]) {
+            return SortMap[sort];
+        }
 
-    private ordersWithTotals = (orders: Order[]) => {
-        let total = 0;
-        return orders.map(order => {
-            return [order[0], order[1], total += order[1]];
-        });
-    }
+        return -1 * SortMap[sort];
+    }) as Order[];
+};
 
-    get bidsWithTotals() {
-        return this.ordersWithTotals(this._bids);
-    }
-
-    get asksWithTotals() {
-        return this.ordersWithTotals(this._asks);
-    }
+export const ordersWithTotals = (orders: Order[]): OrderWithTotal[] => {
+    let total = 0;
+    return orders.map(order => {
+        return [order[0], order[1], total += order[1]];
+    });
 }
