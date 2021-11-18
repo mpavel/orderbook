@@ -1,10 +1,23 @@
 import { Order, OrderWithTotal, Sort } from './Types';
 
-const shouldRemoveExistingOrder = (
-    deltaSize: number,
-    deltaPrice: number,
-    price: number,
-): boolean => deltaSize === 0 && deltaPrice === price;
+const shouldRemoveExistingOrder = (deltaOrder?: Order): boolean => !!deltaOrder && deltaOrder[1] === 0;
+
+const isExistingOrder = (
+    deltaOrder: Order,
+    existingOrder: Order,
+): boolean => deltaOrder[1] !== 0 && deltaOrder[0] === existingOrder[0];
+
+const isNewOrder = (deltaOrder: Order, existingOrders: Order[]): boolean => {
+    if (deltaOrder[1] === 0) {
+        return false;
+    }
+
+    const existingOrder = existingOrders.find(existingOrder => isExistingOrder(
+        deltaOrder,
+        existingOrder,
+    ));
+    return !existingOrder;
+}
 
 const SortMap = {
     [Sort.ASC]: -1,
@@ -17,32 +30,26 @@ export const updateOrders = (
     sort: Sort,
 ): Order[] => {
     return existingOrders.filter(existingOrder => {
+        // Remove orders with price '0' from the list
         const deltaOrder = deltaOrders.find(deltaOrder => deltaOrder[0] === existingOrder[0]);
-        if (deltaOrder && shouldRemoveExistingOrder(
-            deltaOrder[1],
-            deltaOrder[0],
-            existingOrder[0],
-        )) {
-            return false;
-        }
-
-        return true;
+        return !shouldRemoveExistingOrder(deltaOrder);
     }).map(existingOrder => {
-        const deltaOrder = deltaOrders.find(deltaOrder => deltaOrder[1] !== 0 && deltaOrder[0] === existingOrder[0]);
-        if (deltaOrder) {
+        // Update existing order
+        const updatedOrder = deltaOrders.find(deltaOrder => isExistingOrder(
+            deltaOrder,
+            existingOrder,
+        ));
+        if (updatedOrder) {
             return [
                 existingOrder[0],
-                deltaOrder[1],
+                updatedOrder[1],
             ];
         }
 
         return existingOrder;
     }).concat(deltaOrders.filter(deltaOrder => {
-        const hasExistingOrder = existingOrders.find(existingOrder => deltaOrder[0] === existingOrder[0]);
-        if (hasExistingOrder || deltaOrder[1] === 0) {
-            return false
-        }
-        return true;
+        // Add new orders
+        return isNewOrder(deltaOrder, existingOrders);
     })).sort((firstOrder, secondOrder) => {
         if (firstOrder[0] < secondOrder[0]) {
             return SortMap[sort];

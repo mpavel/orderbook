@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { OrderbookView } from './OrderbookView';
 import { OrderbookViewModel } from './Types';
 import { useOrderbook } from './useOrderbook';
 import { ordersWithTotals } from './Orderbook';
 
 export const OrderbookContainer: React.FC = () => {
-    const { bids, asks } = useOrderbook();
+    const [paused, setPaused] = useState(false);
+    const { bids, asks } = useOrderbook(paused);
+
+    const handlePauseResume = () => {
+        setPaused(!paused);
+    }
 
     const viewModel: OrderbookViewModel = {
         buyLevels: ordersWithTotals(bids).map(bid => ({
@@ -25,6 +30,9 @@ export const OrderbookContainer: React.FC = () => {
     };
 
     return (
-        <OrderbookView viewModel={viewModel} />
+        <>
+            <button onClick={handlePauseResume}>Pause/Resume</button>
+            <OrderbookView viewModel={viewModel} />
+        </>
     );
 }
