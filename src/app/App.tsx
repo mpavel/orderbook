@@ -1,11 +1,12 @@
 import React from 'react';
 import './App.scss';
-import { OrderbookContainer } from '../orderbook/OrderbookContainer';
+import { Demo } from '../demo/Demo';
 
 function App() {
     return (
         <div className='App'>
-            <OrderbookContainer />
+            {/*<OrderbookContainer />*/}
+            <Demo />
         </div>
     );
 }
